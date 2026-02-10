@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ultimate Valentine Quiz</title>
+    <style>
+        :root { --pink: #ff4d6d; --light-pink: #ffccd5; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--light-pink); 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; margin: 0; overflow: hidden; text-align: center;
+        }
+        #quiz-container { 
+            background: white; padding: 2rem; border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 500px;
+            position: relative; z-index: 10;
+        }
+        h2 { color: var(--pink); margin-bottom: 1.5rem; }
+        .options { display: grid; gap: 10px; }
+        button { 
+            padding: 12px; border: none; border-radius: 10px; 
+            background: var(--pink); color: white; font-size: 1rem; 
+            cursor: pointer; transition: transform 0.2s;
+        }
+        button:hover { transform: scale(1.05); filter: brightness(1.1); }
+        #noBtn { position: absolute; background: #888; transition: 0.1s; }
+        .hidden { display: none; }
+        #progress { font-size: 0.8rem; color: #888; margin-top: 1rem; }
+        .heart { position: absolute; color: var(--pink); pointer-events: none; animation: float 3s linear forwards; }
+        @keyframes float { to { transform: translateY(-100vh) rotate(360deg); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <div id="quiz-content">
+        <h2 id="question">Loading...</h2>
+        <div id="options" class="options"></div>
+        <div id="progress"></div>
+    </div>
+
+    <div id="valentine-ask" class="hidden">
+        <h1>You passed the test! ❤️</h1>
+        <p>But there's one last question...</p>
+        <h2 style="font-size: 2.5rem;">Will you be my Valentine?</h2>
+        <div style="height: 100px; position: relative; margin-top: 20px;">
+            <button id="yesBtn" onclick="finish()">YES! 💖</button>
+            <button id="noBtn" onmouseover="teleportNo()" onclick="teleportNo()">No</button>
+        </div>
+    </div>
+
+    <div id="final-screen" class="hidden">
+        <h1 style="font-size: 3rem;">YAY! 🥰</h1>
+        <p>Happy Valentine's Day, Love! 😍
+          I dont promise a perfect life, but i promise a forever❤️ 
+          At the end of the day, Im with you.🫶</p>
+        <p>❤️ I love you! ❤️</p>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { q: "1.Who loves you the most?😋", a: ["Me me me", "My Krishna😇", "My Lou😋", "Sneha and Sneha only."] },
+        { q: "2.Where was our first date?🌻", a: ["Mayura🍛", "Mysore🍽", "Mantri Sq🧋", "Melkote🥣"] },
+        { q: "3.What is my favorite name for you?🫶", a: ["Love✨️", "Lou❤️"] },
+        { q: "4.When did you first realize I was so special to you?", a: ["First day we talked🫣", "When life felt better with you 🫶"] },
+        { q: "5.One word that describes us?🤟", a: ["Love💌", "Home💌", "Destiny🙏🏻"] },
+        { q: "6.What changed in your life after I came into it?🤔", a: ["Nothing much🫠", "Everything slowly became brighter"] },
+        { q: "7.If I'm sad, what do you want to do?🤫", a: ["Leave space", "Hold me close ❤️❤️"] },
+        { q: "8.If life becomes hard?🤫", a: ["We struggle", "We hold each other tighter ❤️✨"] },
+        { q: "9.What do you like the most about me?🤔", a: ["Your smile", "Your brain", "Your heart", "Everything"] },
+        { q: "10.Will you marry me?🫣", a: ["Maybe", "Yes ❤️❤️"] },
+        { q: "11.Will you always stay🥺?", a: ["Yes yes yes", "Always ❤️"] },
+        { q: "12.Ready for the most important question?🥁🥁🥁", a: ["Yes", "Absolutely", "I'm nervous", "Let's go!"] }
+    ];
+
+    let currentIdx = 0;
+
+    function loadQuestion() {
+        const qData = questions[currentIdx];
+        document.getElementById("question").innerText = qData.q;
+        const optionsDiv = document.getElementById("options");
+        optionsDiv.innerHTML = "";
+        qData.a.forEach((opt) => {
+            const btn = document.createElement("button");
+            btn.innerText = opt;
+            btn.onclick = () => nextQuestion();
+            optionsDiv.appendChild(btn);
+        });
+        document.getElementById("progress").innerText = `Question ${currentIdx + 1} of ${questions.length}`;
+    }
+
+    function nextQuestion() {
+        currentIdx++;
+        if (currentIdx < questions.length) {
+            loadQuestion();
+        } else {
+            document.getElementById("quiz-content").classList.add("hidden");
+            document.getElementById("valentine-ask").classList.remove("hidden");
+        }
+    }
+
+    function teleportNo() {
+        const btn = document.getElementById("noBtn");
+        // Ensure the button stays within the visible screen area
+        const x = Math.random() * (window.innerWidth - btn.offsetWidth);
+        const y = Math.random() * (window.innerHeight - btn.offsetHeight);
+        btn.style.left = x + "px";
+        btn.style.top = y + "px";
+    }
+
+    function finish() {
+        document.getElementById("valentine-ask").classList.add("hidden");
+        document.getElementById("final-screen").classList.remove("hidden");
+        setInterval(createHeart, 300);
+    }
+
+    function createHeart() {
+        const heart = document.createElement("div");
+        heart.classList.add("heart");
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.fontSize = Math.random() * 20 + 20 + "px";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 3000);
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
+
+
